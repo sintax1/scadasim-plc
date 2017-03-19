@@ -12,6 +12,9 @@ import logging
 from Queue import Queue
 
 from multiprocessing import Queue, Process
+logging.basicConfig()
+log = logging.getLogger('scadasim')
+log.setLevel(logging.DEBUG)
 
 class CallbackDataBlock(ModbusSequentialDataBlock):
     ''' A datablock that stores the new value in memory
@@ -35,11 +38,6 @@ class CallbackDataBlock(ModbusSequentialDataBlock):
         '''
         super(CallbackDataBlock, self).setValues(address, value)
         self.queue.put((address, value))
-
-
-logging.basicConfig()
-log = logging.getLogger('scadasim')
-log.setLevel(logging.INFO)
 
 class PLC(object):
 
@@ -105,10 +103,9 @@ class PLC(object):
         log.debug("[PLC][%s] Reading Sensors" % self)
         self._get_sensor_data()
 
-        while True:
+        while not self.queue.empty():
             # Update scadasim with any new values from Master
             address, value = self.queue.get()
-            if not address: break
             log.debug("[PLC][%s] setting register %s to value %s" % (self.name, address, value))
             self.dbusclient.setValue(plcname=self.name, address=address, value=value)
 
