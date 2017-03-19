@@ -14,7 +14,7 @@ from Queue import Queue
 from multiprocessing import Queue, Process
 logging.basicConfig()
 log = logging.getLogger('scadasim')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 class CallbackDataBlock(ModbusSequentialDataBlock):
     ''' A datablock that stores the new value in memory
