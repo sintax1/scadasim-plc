@@ -1,0 +1,6 @@
+asn1crypto==0.22.0
+cryptography==1.8.1
+pyasn1==0.2.3
+pymodbus==1.2.0
+Twisted==17.1.0
+-e git+https://github.com/sintax1/scadasim.git@23dfac72c1ce8d477526289526f1588e80d3c74c#egg=scadasim
