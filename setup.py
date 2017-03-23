@@ -9,4 +9,3 @@ setup(name='scadasim_plc',
       license='MIT',
       packages=['scadasim_plc', 'tests'],
       zip_safe=False)
-
