@@ -50,9 +50,11 @@ class PLC(object):
             'd': 0, 'c': 1, 'h': 2, 'i': 3
         }
 
+        """
         if not self.slaveid == sensor_data['slaveid']:
             log.error("[PLC][%s] '%s' was expected as slaveid, not '%s' " % (self.name, self.slaveid, sensor_data['slaveid']))
-
+        """
+        
         for sensor in sensor_data['sensors']:
             register = register_types[sensor_data['sensors'][sensor]['register_type']]
 
