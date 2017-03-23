@@ -83,7 +83,7 @@ class PLC(object):
         log.debug("[PLC][%s] Initialized" % self.name)
         while not self.registered:
             log.debug("[PLC][%s] Trying to register with scadasim on dbus" % self.name)
-            self._registerPLC():
+            self._registerPLC()
             time.sleep(1)
 
         log.debug("[PLC][%s] Starting update service" % self.name)
