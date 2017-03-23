@@ -45,7 +45,7 @@ class PLC(object):
 
     def _get_sensor_data(self):
 
-        sensor_data = self.dbusclient.readSensors(plcname=self.name)
+        sensor_data = self.dbusclient.readSensors(plcname=self.name)['sensors']
         register_types = {
             'd': 0, 'c': 1, 'h': 2, 'i': 3
         }
