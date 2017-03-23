@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
 """
 
-‘di’ - Discrete Inputs initializer ‘co’ - Coils initializer ‘hr’ - Holding Register initializer ‘ir’ - Input Registers iniatializer
+'di' - Discrete Inputs initializer 'co' - Coils initializer 'hr' - Holding Register initializer 'ir' - Input Registers iniatializer
 
     Coil/Register Numbers   Data Addresses  Type        Table Name                          Use
     1-9999                  0000 to 270E    Read-Write  Discrete Output Coils               on/off read/write   co
