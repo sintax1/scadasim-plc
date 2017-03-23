@@ -83,7 +83,11 @@ class PLC(object):
         log.debug("[PLC][%s] Initialized" % self.name)
         while not self.registered:
             log.debug("[PLC][%s] Trying to register with scadasim on dbus" % self.name)
-            self._registerPLC()
+            try:
+                self._registerPLC()
+            except KeyError:
+                log.warn("[PLC][%s] PLC not found within scadasim. Verify Docker Compose container names match list of plcs in scadasim config")
+                
             time.sleep(1)
 
         log.debug("[PLC][%s] Starting update service" % self.name)
@@ -94,7 +98,7 @@ class PLC(object):
 
 
 if __name__ == '__main__':
-    plc = PLC()
+    plc = PLC(name='plc1')
     plc.main()
 
 """

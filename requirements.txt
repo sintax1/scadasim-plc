@@ -1,3 +1,5 @@
 PyYAML==3.12
 pytest==3.0.7
+pymodbus==1.2.0
+pyasn1==0.2.3
 -e git+https://github.com/sintax1/dbusservice#egg=dbusservice
