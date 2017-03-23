@@ -54,12 +54,12 @@ class PLC(object):
         if not self.slaveid == sensor_data['slaveid']:
             log.error("[PLC][%s] '%s' was expected as slaveid, not '%s' " % (self.name, self.slaveid, sensor_data['slaveid']))
         """
-        
-        for sensor in sensor_data['sensors']:
-            register = register_types[sensor_data['sensors'][sensor]['register_type']]
 
-            address = int(sensor_data['sensors'][sensor]['data_address'])
-            value = int(sensor_data['sensors'][sensor]['value'])
+        for sensor in sensor_data:
+            register = register_types[sensor_data[sensor]['register_type']]
+
+            address = int(sensor_data[sensor]['data_address'])
+            value = int(sensor_data[sensor]['value'])
 
             self.context[self.slaveid].setValues(register, address, value)
 
