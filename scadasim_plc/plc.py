@@ -35,6 +35,7 @@ class PLC(object):
         self.identity = identity
 
     def _initialize_store(self, max_register_size=100):
+        store = {}
         store[self.slaveid] = ModbusSlaveContext(
             di = ModbusSequentialDataBlock(0, [False]*max_register_size),
             co = ModbusSequentialDataBlock(0, [False]*max_register_size),
