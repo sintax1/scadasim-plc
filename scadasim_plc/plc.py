@@ -24,7 +24,7 @@ class CallbackDataBlock(ModbusSequentialDataBlock):
         '''
         self.queue = queue
 
-        values = {k:0 for k in range(1, max_register_size)}
+        values = [0]*max_register_size
         super(CallbackDataBlock, self).__init__(0, values)
 
     def setValues(self, address, value):
