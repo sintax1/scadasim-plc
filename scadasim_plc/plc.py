@@ -10,6 +10,32 @@ import time
 
 import logging
 
+from multiprocessing import Queue, Process
+
+class CallbackDataBlock(ModbusSparseDataBlock):
+    ''' A datablock that stores the new value in memory
+    and passes the operation to a message queue for further
+    processing.
+    '''
+
+    def __init__(self, queue):
+        '''
+        '''
+        self.queue = queue
+
+        values = ModbusSequentialDataBlock(0, [0]*max_register_size)
+        super(CallbackDataBlock, self).__init__(values)
+
+    def setValues(self, address, value):
+        ''' Sets the requested values of the datastore
+
+        :param address: The starting address
+        :param values: The new values to be set
+        '''
+        super(CallbackDataBlock, self).setValues(address, value)
+        self.queue.put((address, value))
+
+
 logging.basicConfig()
 log = logging.getLogger('scadasim')
 log.setLevel(logging.INFO)
@@ -34,14 +60,17 @@ class PLC(object):
         identity.MajorMinorRevision = '1.0'
         self.identity = identity
         self.speed = 1
+        self.queue = Queue()
 
     def _initialize_store(self, max_register_size=100):
         store = {}
+        block = CallbackDataBlock(self.queue)
+
         store[self.slaveid] = ModbusSlaveContext(
-            di = ModbusSequentialDataBlock(0, [False]*max_register_size),
-            co = ModbusSequentialDataBlock(0, [False]*max_register_size),
-            hr = ModbusSequentialDataBlock(0, [0]*max_register_size),
-            ir = ModbusSequentialDataBlock(0, [0]*max_register_size))
+            di = block,
+            co = block,
+            hr = block,
+            ir = block)
         self.context = ModbusServerContext(slaves=store, single=False)
 
     def _get_sensor_data(self):
@@ -71,10 +100,16 @@ class PLC(object):
         log.debug("[PLC][%s] Registered on dbus" % self.name)
         return True
 
-
     def update(self):
         log.debug("[PLC][%s] Reading Sensors" % self)
         self._get_sensor_data()
+
+        while True:
+            # Update scadasim with any new values from Master
+            address, value = queue.get()
+            if not device: break
+            log.debug("[PLC][%s] setting register %s to value %s" % (self.name, address, value))
+            self.dbusclient.setValue(plcname=self.name, address=address, value=value)
 
         delay = (-time.time()%self.speed)
         t = threading.Timer(delay, self.update, ())
