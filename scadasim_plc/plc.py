@@ -61,9 +61,9 @@ class PLC(object):
             address = int(sensor_data[sensor]['data_address'])
             value = int(sensor_data[sensor]['value'])
 
-            values = context[self.slaveid].getValues(register, address, count=1)
+            values = self.context[self.slaveid].getValues(register, address, count=1)
 
-            print values
+            print valuesse
 
             self.context[self.slaveid].setValues(register, address, values)
 
