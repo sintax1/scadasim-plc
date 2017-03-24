@@ -12,18 +12,18 @@ import logging
 
 from multiprocessing import Queue, Process
 
-class CallbackDataBlock(ModbusSparseDataBlock):
+class CallbackDataBlock(ModbusSequentialDataBlock):
     ''' A datablock that stores the new value in memory
     and passes the operation to a message queue for further
     processing.
     '''
 
-    def __init__(self, queue):
+    def __init__(self, queue, max_register_size):
         '''
         '''
         self.queue = queue
 
-        values = ModbusSequentialDataBlock(0, [0]*max_register_size)
+        values = {k:0 for k in range(1, max_register_size)}
         super(CallbackDataBlock, self).__init__(values)
 
     def setValues(self, address, value):
@@ -64,7 +64,7 @@ class PLC(object):
 
     def _initialize_store(self, max_register_size=100):
         store = {}
-        block = CallbackDataBlock(self.queue)
+        block = CallbackDataBlock(self.queue, max_register_size)
 
         store[self.slaveid] = ModbusSlaveContext(
             di = block,
