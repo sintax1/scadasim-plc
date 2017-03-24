@@ -107,7 +107,7 @@ class PLC(object):
 
 
 if __name__ == '__main__':
-    plc = PLC(name='plc1')
+    plc = PLC()
     plc.main()
 
 """
