@@ -45,7 +45,7 @@ class PLC(object):
 
     def _get_sensor_data(self):
 
-        sensor_data = self.dbusclient.readSensors(plcname=self.name)['sensors']
+        sensor_data = self.dbusclient.readSensors(plcname=self.name)
         register_types = {
             'd': 0, 'c': 1, 'h': 2, 'i': 3
         }
@@ -61,7 +61,11 @@ class PLC(object):
             address = int(sensor_data[sensor]['data_address'])
             value = int(sensor_data[sensor]['value'])
 
-            self.context[self.slaveid].setValues(register, address, value)
+            values = context[self.slaveid].getValues(register, address, count=1)
+
+            print values
+
+            self.context[self.slaveid].setValues(register, address, values)
 
     def _registerPLC(self):
         self.slaveid = self.dbusclient.registerPLC(plcname=self.name)
