@@ -63,13 +63,12 @@ class PLC(object):
 
     def _initialize_store(self, max_register_size=100):
         store = {}
-        block = CallbackDataBlock(self.queue, max_register_size)
 
         store[self.slaveid] = ModbusSlaveContext(
-            di = block,
-            co = block,
-            hr = block,
-            ir = block)
+            di = CallbackDataBlock(self.queue, max_register_size),
+            co = CallbackDataBlock(self.queue, max_register_size),
+            hr = CallbackDataBlock(self.queue, max_register_size),
+            ir = CallbackDataBlock(self.queue, max_register_size))
         self.context = ModbusServerContext(slaves=store, single=False)
 
     def _get_sensor_data(self):
