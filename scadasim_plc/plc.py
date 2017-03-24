@@ -61,15 +61,7 @@ class PLC(object):
             address = int(sensor_data[sensor]['data_address'])
             value = int(sensor_data[sensor]['value'])
 
-            print self.context
-            print self.context[self.slaveid]
-
-
-            values = self.context[self.slaveid].getValues(register, address, count=1)
-
-            print values
-
-            self.context[self.slaveid].setValues(register, address, values)
+            self.context[self.slaveid].setValues(register, address, [value])
 
     def _registerPLC(self):
         self.slaveid = self.dbusclient.registerPLC(plcname=self.name)
