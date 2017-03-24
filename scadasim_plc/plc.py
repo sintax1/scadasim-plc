@@ -12,7 +12,7 @@ import logging
 
 logging.basicConfig()
 log = logging.getLogger('scadasim')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 class PLC(object):
 
@@ -33,6 +33,7 @@ class PLC(object):
         identity.ModelName = 'SimPLC'
         identity.MajorMinorRevision = '1.0'
         self.identity = identity
+        self.speed = 1
 
     def _initialize_store(self, max_register_size=100):
         store = {}
@@ -74,9 +75,14 @@ class PLC(object):
     def update(self):
         log.debug("[PLC][%s] Reading Sensors" % self)
         self._get_sensor_data()
-        t = Timer(5, self.update, ())
+
+        delay = (-time.time()%self.speed)
+        t = threading.Timer(delay, self.update, ())
         t.daemon = True
         t.start()
+
+    def set_speed(self, speed):
+        self.speed = speed
 
     def __repr__(self):
         return "%s" % self.name
@@ -97,7 +103,7 @@ class PLC(object):
         self.update()
 
         log.debug("[PLC][%s] Starting MODBUS Server" % self.name)
-        StartTcpServer(self.context, identity=self.identity, address=("0.0.0.0", 5002))
+        StartTcpServer(self.context, identity=self.identity, address=("0.0.0.0", 502))
 
 
 if __name__ == '__main__':
