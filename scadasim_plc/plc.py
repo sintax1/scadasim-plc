@@ -9,6 +9,7 @@ import socket
 import time
 
 import logging
+from Queue import Queue
 
 from multiprocessing import Queue, Process
 
@@ -24,7 +25,7 @@ class CallbackDataBlock(ModbusSequentialDataBlock):
         self.queue = queue
 
         values = {k:0 for k in range(1, max_register_size)}
-        super(CallbackDataBlock, self).__init__(values)
+        super(CallbackDataBlock, self).__init__(0, values)
 
     def setValues(self, address, value):
         ''' Sets the requested values of the datastore
@@ -106,8 +107,8 @@ class PLC(object):
 
         while True:
             # Update scadasim with any new values from Master
-            address, value = queue.get()
-            if not device: break
+            address, value = self.queue.get()
+            if not address: break
             log.debug("[PLC][%s] setting register %s to value %s" % (self.name, address, value))
             self.dbusclient.setValue(plcname=self.name, address=address, value=value)
 
