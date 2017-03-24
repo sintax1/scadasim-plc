@@ -4,7 +4,7 @@ from pymodbus.server.async import StartTcpServer
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock, ModbusSlaveContext, ModbusServerContext
 
-from threading import Timer
+import threading
 import socket
 import time
 
