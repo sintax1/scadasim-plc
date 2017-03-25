@@ -91,9 +91,9 @@ class PLC(object):
 
         while not self.queue.empty():
             # Update scadasim with any new values from Master
-            fx, address, value = self.queue.get()
-            log.debug("[PLC][%s] setting fx: %s register:%s to value:%s" % (self.name, fx, address, value))
-            self.dbusclient.setValue(plcname=self.name, fx=fx, address=address, value=value)
+            fx, address, values = self.queue.get()
+            log.debug("[PLC][%s] setting fx: %s register:%s to value:%s" % (self.name, fx, address, values))
+            self.dbusclient.setValues(plcname=self.name, fx=fx, address=address, values=values)
 
         self._get_sensor_data()
 
