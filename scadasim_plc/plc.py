@@ -20,11 +20,11 @@ class CallbackModbusSlaveContext(ModbusSlaveContext):
 
     def __init__(self, queue, **kwargs):
         self.queue = queue
-        super(ModbusSlaveContext, self).__init__(**kwargs)
+        super(CallbackModbusSlaveContext, self).__init__(**kwargs)
 
     def setValues(self, fx, address, values):
         super(CallbackModbusSlaveContext, self).setValues(fx, address, values)
-        self.queue.put((fx, address, value))
+        self.queue.put((fx, address, values))
 
 class PLC(object):
 
@@ -52,6 +52,7 @@ class PLC(object):
         store = {}
 
         store[self.slaveid] = CallbackModbusSlaveContext(
+            self.queue,
             di = ModbusSequentialDataBlock(0, [False]*100),
             co = ModbusSequentialDataBlock(0, [False]*100),
             hr = ModbusSequentialDataBlock(0, [0]*100),
@@ -74,7 +75,7 @@ class PLC(object):
             register = register_types[sensor_data[sensor]['register_type']]
 
             address = int(sensor_data[sensor]['data_address'])
-            value = int(sensor_data[sensor]['value'][0])
+            value = int(sensor_data[sensor]['value'])
 
             self.context[self.slaveid].setValues(register, address, [value])
 
