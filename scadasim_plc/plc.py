@@ -63,7 +63,7 @@ class PLC(object):
 
         sensor_data = self.dbusclient.readSensors(plcname=self.name)
         register_types = {
-            'd': 0, 'c': 1, 'h': 2, 'i': 3
+            'd': 0, 'c': 1, 'h': 3, 'i': 2
         }
 
         """
@@ -72,12 +72,12 @@ class PLC(object):
         """
 
         for sensor in sensor_data:
-            register = register_types[sensor_data[sensor]['register_type']]
+            #register = register_types[sensor_data[sensor]['register_type']]
 
             address = int(sensor_data[sensor]['data_address'])
             value = int(sensor_data[sensor]['value'])
 
-            self.context[self.slaveid].setValues(register, address, [value])
+            self.context[self.slaveid].setValues(sensor_data[sensor]['register_type'], address, [value])
 
     def _registerPLC(self):
         self.slaveid = self.dbusclient.registerPLC(plcname=self.name)
