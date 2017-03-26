@@ -73,7 +73,9 @@ class PLC(object):
             elif register in ['h', 'i']:
                 value = int(sensor_data[sensor]['value'])
 
-            self.context[self.slaveid][register].setValues(address, [value])
+            address = address + 1  # section 4.4 of specification
+            self.context[self.slaveid].store[register].setValues(address, [value])
+
 
     def _registerPLC(self):
         self.slaveid = self.dbusclient.registerPLC(plcname=self.name)
