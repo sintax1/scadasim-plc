@@ -62,22 +62,18 @@ class PLC(object):
     def _get_sensor_data(self):
 
         sensor_data = self.dbusclient.readSensors(plcname=self.name)
-        register_types = {
-            'd': 0, 'c': 1, 'h': 3, 'i': 2
-        }
-
-        """
-        if not self.slaveid == sensor_data['slaveid']:
-            log.error("[PLC][%s] '%s' was expected as slaveid, not '%s' " % (self.name, self.slaveid, sensor_data['slaveid']))
-        """
 
         for sensor in sensor_data:
-            #register = register_types[sensor_data[sensor]['register_type']]
+            register = sensor_data[sensor]['register_type']
 
             address = int(sensor_data[sensor]['data_address'])
-            value = int(sensor_data[sensor]['value'])
 
-            self.context[self.slaveid].setValues(sensor_data[sensor]['register_type'], address, [value])
+            if register in ['c', 'd']:
+                value = bool(sensor_data[sensor]['value'])
+            elif register in ['h', 'i']:
+                value = int(sensor_data[sensor]['value'])
+
+            self.context[self.slaveid][register].setValues(address, [value])
 
     def _registerPLC(self):
         self.slaveid = self.dbusclient.registerPLC(plcname=self.name)
