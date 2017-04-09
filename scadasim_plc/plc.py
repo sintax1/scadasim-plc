@@ -79,13 +79,13 @@ class PLC(object):
 
             address = address + 1  # section 4.4 of specification
             self.context[self.slaveid].store[register].setValues(address, [
-                                                                 value])
+                value])
 
     def _registerPLC(self):
         self.slaveid = self.plcrpcclient.registerPLC()
         self.registered = True
         self._initialize_store()
-        log.debug("[PLC][%s] Registered on dbus" % self.name)
+        log.debug("[PLC][%s] Registered on scadasim rpc" % self.name)
         return True
 
     def update(self):
@@ -116,7 +116,7 @@ class PLC(object):
         log.debug("[PLC][%s] Initialized" % self.name)
         while not self.registered:
             log.debug(
-                "[PLC][%s] Trying to register with scadasim on dbus" % self.name)
+                "[PLC][%s] Trying to register with scadasim rpc" % self.name)
             try:
                 self._registerPLC()
             except KeyError:
