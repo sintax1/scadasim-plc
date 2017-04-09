@@ -48,7 +48,7 @@ class PLC(object):
         identity.ModelName = 'SimPLC'
         identity.MajorMinorRevision = '1.0'
         self.identity = identity
-        self.speed = 1
+        self.speed = 0.2
         self.queue = Queue()
         self.context = None
 
