@@ -16,6 +16,7 @@ logging.basicConfig()
 log = logging.getLogger('scadasim')
 log.setLevel(logging.INFO)
 
+
 class CallbackModbusSlaveContext(ModbusSlaveContext):
 
     def __init__(self, queue, **kwargs):
@@ -26,6 +27,7 @@ class CallbackModbusSlaveContext(ModbusSlaveContext):
         super(CallbackModbusSlaveContext, self).setValues(fx, address, values)
         self.queue.put((fx, address, values))
 
+
 class PLC(object):
 
     def __init__(self, name=None):
@@ -34,7 +36,8 @@ class PLC(object):
         self.name = name
         if not name:
             self.name = socket.gethostname()
-        self.plcrpcclient = PLCRPCClient(rpc_server="localhost", rpc_port=8000, plc=self.name)
+        self.plcrpcclient = PLCRPCClient(
+            rpc_server="localhost", rpc_port=8000, plc=self.name)
         self.registered = False
 
         identity = ModbusDeviceIdentification()
@@ -47,16 +50,17 @@ class PLC(object):
         self.identity = identity
         self.speed = 1
         self.queue = Queue()
+        self.context = None
 
     def _initialize_store(self, max_register_size=100):
         store = {}
 
         store[self.slaveid] = CallbackModbusSlaveContext(
             self.queue,
-            di = ModbusSequentialDataBlock(0, [False]*100),
-            co = ModbusSequentialDataBlock(0, [False]*100),
-            hr = ModbusSequentialDataBlock(0, [0]*100),
-            ir = ModbusSequentialDataBlock(0, [0]*100))
+            di=ModbusSequentialDataBlock(0, [False] * 100),
+            co=ModbusSequentialDataBlock(0, [False] * 100),
+            hr=ModbusSequentialDataBlock(0, [0] * 100),
+            ir=ModbusSequentialDataBlock(0, [0] * 100))
         self.context = ModbusServerContext(slaves=store, single=False)
 
     def _get_sensor_data(self):
@@ -74,8 +78,8 @@ class PLC(object):
                 value = int(sensor_data[sensor]['value'])
 
             address = address + 1  # section 4.4 of specification
-            self.context[self.slaveid].store[register].setValues(address, [value])
-
+            self.context[self.slaveid].store[register].setValues(address, [
+                                                                 value])
 
     def _registerPLC(self):
         self.slaveid = self.plcrpcclient.registerPLC()
@@ -90,12 +94,13 @@ class PLC(object):
         while not self.queue.empty():
             # Update scadasim with any new values from Master
             fx, address, values = self.queue.get()
-            log.debug("[PLC][%s] setting fx: %s register:%s to value:%s" % (self.name, fx, address, values))
+            log.debug("[PLC][%s] setting fx: %s register:%s to value:%s" %
+                      (self.name, fx, address, values))
             self.plcrpcclient.setValues(fx=fx, address=address, values=values)
 
         self._get_sensor_data()
 
-        delay = (-time.time()%self.speed)
+        delay = (-time.time() % self.speed)
         t = threading.Timer(delay, self.update, ())
         t.daemon = True
         t.start()
@@ -110,19 +115,24 @@ class PLC(object):
 
         log.debug("[PLC][%s] Initialized" % self.name)
         while not self.registered:
-            log.debug("[PLC][%s] Trying to register with scadasim on dbus" % self.name)
+            log.debug(
+                "[PLC][%s] Trying to register with scadasim on dbus" % self.name)
             try:
                 self._registerPLC()
             except KeyError:
-                log.warn("[PLC][%s] PLC not found within scadasim. Verify Docker Compose container names match list of plcs in scadasim config")
-                
+                log.warn(
+                    """[PLC][%s] PLC not found within scadasim. Verify Docker
+                     Compose container names match list of plcs in scadasim
+                     config""")
+
             time.sleep(1)
 
         log.debug("[PLC][%s] Starting update service" % self.name)
         self.update()
 
         log.debug("[PLC][%s] Starting MODBUS Server" % self.name)
-        StartTcpServer(self.context, identity=self.identity, address=("0.0.0.0", 502))
+        StartTcpServer(self.context, identity=self.identity,
+                       address=("0.0.0.0", 502))
 
 
 if __name__ == '__main__':
