@@ -89,7 +89,7 @@ class PLC(object):
         return True
 
     def update(self):
-        log.debug("[PLC][%s] Reading Sensors" % self)
+        log.debug("[PLC][%s] Updating PLC values with sensor values" % self)
 
         while not self.queue.empty():
             # Update scadasim with any new values from Master
