@@ -34,7 +34,7 @@ class PLC(object):
         self.name = name
         if not name:
             self.name = socket.gethostname()
-        self.plcrpcclient = PLCRPCClient(self.name)
+        self.plcrpcclient = PLCRPCClient(rpc_server="localhost", rpc_port=8000, plc=self.name)
         self.registered = False
 
         identity = ModbusDeviceIdentification()
