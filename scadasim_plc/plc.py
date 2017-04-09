@@ -1,4 +1,4 @@
-from dbusservice import DBusClient
+from plcrpcservice import PLCRPCClient
 
 from pymodbus.server.async import StartTcpServer
 from pymodbus.device import ModbusDeviceIdentification
@@ -34,7 +34,7 @@ class PLC(object):
         self.name = name
         if not name:
             self.name = socket.gethostname()
-        self.dbusclient = DBusClient(self.name)
+        self.plcrpcclient = PLCRPCClient(self.name)
         self.registered = False
 
         identity = ModbusDeviceIdentification()
@@ -61,7 +61,7 @@ class PLC(object):
 
     def _get_sensor_data(self):
 
-        sensor_data = self.dbusclient.readSensors(plcname=self.name)
+        sensor_data = self.plcrpcclient.readSensors()
 
         for sensor in sensor_data:
             register = sensor_data[sensor]['register_type']
@@ -78,7 +78,7 @@ class PLC(object):
 
 
     def _registerPLC(self):
-        self.slaveid = self.dbusclient.registerPLC(plcname=self.name)
+        self.slaveid = self.plcrpcclient.registerPLC()
         self.registered = True
         self._initialize_store()
         log.debug("[PLC][%s] Registered on dbus" % self.name)
@@ -91,7 +91,7 @@ class PLC(object):
             # Update scadasim with any new values from Master
             fx, address, values = self.queue.get()
             log.debug("[PLC][%s] setting fx: %s register:%s to value:%s" % (self.name, fx, address, values))
-            self.dbusclient.setValues(plcname=self.name, fx=fx, address=address, values=values)
+            self.plcrpcclient.setValues(fx=fx, address=address, values=values)
 
         self._get_sensor_data()
 

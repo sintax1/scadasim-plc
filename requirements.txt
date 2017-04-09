@@ -3,4 +3,4 @@ pytest==3.0.7
 pymodbus==1.2.0
 pyasn1==0.2.3
 cryptography==1.8.1
--e git+https://github.com/sintax1/dbusservice#egg=dbusservice
+-e git+https://github.com/sintax1/plcrpcservice#egg=plcrpcservice
